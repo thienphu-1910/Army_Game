@@ -1,18 +1,51 @@
-## Getting Started
+# GA02 - Design Pattern - Army Game
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+A military game simulation project applying Design Patterns to build a flexible and scalable software architecture.
 
-## Folder Structure
+## 1. Team members
 
-The workspace contains two folders by default, where:
+- Đặng Quang Hưng - 23127281
+- Đặng Nghi Văn - 23127281
+- Trương Công Thiên Phú - 23127455
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## 2. Folder Structure
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+The project is organized into pattern-based packages to easily manage the source code:
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+```text
+ArmyGameProject/
+├── lib/                    # Contains external libraries (JavaFX, etc.)
+├── bin/                    # Contains compiled .class files
+└── src/
+    ├── App.java            # Main entry point of the application
+    ├── core/               # Core interfaces and base classes
+    │   ├── Soldier.java    
+    │   └── ArmyComponent.java
+    ├── units/              # Specific soldier types
+    │   ├── Infantryman.java
+    │   └── Horseman.java
+    ├── decorators/         # Pattern: Decorator (Weapons/Armor equipment)
+    │   ├── EquipmentDecorator.java
+    │   ├── Shield.java
+    │   └── Sword.java
+    ├── proxy/              # Pattern: Proxy (Duplicate equipment control)
+    │   └── SoldierProxy.java
+    ├── composite/          # Pattern: Composite (Squads, Army organization)
+    │   ├── ArmyGroup.java
+    │   └── Army.java
+    ├── visitor/            # Pattern: Visitor (Traversing the army structure)
+    │   ├── Visitor.java
+    │   ├── DisplayVisitor.java
+    │   └── CountVisitor.java
+    ├── observer/           # Pattern: Observer (Tracking and notifying deaths)
+    │   ├── Subject.java
+    │   ├── DeathObserver.java
+    │   ├── DeathCountObserver.java
+    │   └── DeathNotifierObserver.java
+    ├── factory/            # Pattern: Abstract Factory & Singleton (Generational creation)
+    │   ├── SoldierFactory.java
+    │   ├── MedievalFactory.java
+    │   ├── WorldWarFactory.java
+    │   └── ScienceFictionFactory.java
+    └── models/             # Enums and helper data classes
+        └── EquipmentType.java
