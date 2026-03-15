@@ -7,6 +7,7 @@ import java.util.Set;
 import core.Soldier;
 import models.EquipmentType;
 import models.SoldierKind;
+import visitor.Visitor;
 
 public abstract class EquipmentDecorator implements Soldier {
     protected Soldier soldier;
@@ -38,6 +39,22 @@ public abstract class EquipmentDecorator implements Soldier {
     @Override
     public SoldierKind getKind() {
         return soldier.getKind();
+    }
+
+    @Override
+    public int count() {
+        return soldier.count();
+    }
+
+    @Override
+    public void display() {
+        System.out.print(this.getEquipmentType().toString() + " + ");
+    }
+
+    @Override
+    public void accept(Visitor v) {
+        soldier.accept(v);
+        v.visitEquipmentDecorator(this);
     }
 
     @Override

@@ -26,4 +26,5 @@ public class Shield extends EquipmentDecorator {
     protected EquipmentType getEquipmentType() {
         return EquipmentType.SHIELD;
     }
+
 }

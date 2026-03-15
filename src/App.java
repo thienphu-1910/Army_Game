@@ -1,96 +1,112 @@
 import core.Soldier;
 import java.util.ArrayList;
 import java.util.List;
+
+import composite.Army;
 import models.EquipmentType;
 import proxy.SoldierProxy;
 import units.Horseman;
 import units.Infantryman;
+import visitor.CountVisitor;
+import visitor.DisplayVisitor;
+import visitor.Visitor;
 
 public class App {
     public static void main(String[] args) {
-        // Two armies: blue and red
-        List<Soldier> blueArmy = new ArrayList<>();
-        List<Soldier> redArmy = new ArrayList<>();
+        Army blueArmy = generateArmy(new Army("Blue Army"), 2);
+        Army redArmy = generateArmy(new Army("Red Army"), 3);
 
-        Soldier blue1 = new SoldierProxy(new Infantryman("Blue-Infantry-A"));
-        blue1.addSword();
-        blue1.addSword(); // test duplicate
-        blue1.addShield();
-        blueArmy.add(blue1);
+        var countVisitor = new CountVisitor();
+        blueArmy.accept(countVisitor);
 
-        Soldier blue2 = new SoldierProxy(new Horseman("Blue-Horseman-A"));
-        blue2.addEquipment(EquipmentType.SHIELD);
-        blueArmy.add(blue2);
+        System.out.println("Total: " + countVisitor.getTotalSoldiers());
+        System.out.println("Infantryman: " + countVisitor.getTotalInfantryman());
+        System.out.println("Horseman: " + countVisitor.getTotalHorseman());
 
-        Soldier red1 = new SoldierProxy(new Infantryman("Red-Infantry-A"));
-        red1.addShield();
-        redArmy.add(red1);
+        var DisplayVisitor = new DisplayVisitor();
+        redArmy.accept(DisplayVisitor);
 
-        Soldier red2 = new SoldierProxy(new Horseman("Red-Horseman-A"));
-        red2.addSword();
-        redArmy.add(red2);
-
-        // remove comment section below to run battle simulation
-        runBattle(blueArmy, redArmy); 
+        launch(blueArmy, redArmy);
     }
+    
+    private static Army generateArmy(Army army, int groupQuantity) {
+        if (groupQuantity == 1) {
+            Soldier infantryman1 = new SoldierProxy(new Infantryman("Infantryman-A"));
+            infantryman1.addShield();
+            infantryman1.addSword();
 
-    /*
-    private static void runBattle(List<Soldier> leftArmy, List<Soldier> rightArmy) {
-        int round = 1;
+            Soldier infantryman2 = new SoldierProxy(new Infantryman("Infantryman-B"));
+            infantryman2.addShield();
+            infantryman2.addShield(); // test duplication
+            infantryman2.addSword();
 
-        while (hasAlive(leftArmy) && hasAlive(rightArmy)) {
-            System.out.println("\n===== ROUND " + round + " =====");
-            performAttacks(leftArmy, rightArmy);
+            Soldier infantryman3 = new SoldierProxy(new Infantryman("Infantryman-C"));
+            infantryman3.addSword();
 
-            if (!hasAlive(rightArmy)) {
-                break;
-            }
+            Soldier infantryman4 = new SoldierProxy(new Infantryman("Infantryman-D"));
+            infantryman4.addSword();
 
-            performAttacks(rightArmy, leftArmy);
-            round++;
+            Soldier horseman1 = new SoldierProxy(new Horseman("Horseman-A"));
+            horseman1.addShield();
+            horseman1.addSword();
+
+            Soldier horseman2 = new SoldierProxy(new Horseman("Horseman-B"));
+            horseman2.addShield();
+            horseman2.addSword();
+
+            army.add(infantryman1);
+            army.add(infantryman2);
+            army.add(infantryman3);
+            army.add(infantryman4);
+
+            army.add(horseman1);
+            army.add(horseman2);
+
+            return army;
         }
 
-        System.out.println("\n===== RESULT =====");
-        if (hasAlive(leftArmy)) {
-            System.out.println("Left army wins.");
-        } else {
-            System.out.println("Right army wins.");
+        for (int i = 0; i < groupQuantity; ++i) {
+            Army group = generateArmy(new Army(), groupQuantity - 1);
+            army.add(group);
         }
+
+        return army;
     }
+    
+    private static void launch(Army leftArmy, Army rightArmy) {
+        System.out.println(" =======================================================");
+        System.out.println("|                    LAUNCH BATTLE                      |");
+        System.out.println(" =======================================================");
 
-    private static void performAttacks(List<Soldier> attackers, List<Soldier> defenders) {
-        for (Soldier attacker : attackers) {
-            if (!attacker.isAlive()) {
-                continue;
-            }
+        
+        while (leftArmy.isAlive() && rightArmy.isAlive()) {
+            System.out.println("");
+            System.out.println("=======New Turn=======");
+            System.out.println("");
+            // Left attack first
+            fight(leftArmy, rightArmy);
 
-            Soldier defender = findFirstAlive(defenders);
-            if (defender == null) {
-                return;
-            }
-
-            int strength = attacker.hit();
-            boolean alive = defender.wardOff(strength);
-
-            System.out.println(
-                attacker.getName() + " attacked " + defender.getName() +
-                " with " + strength +
-                " -> defenderAlive=" + alive
-            );
-        }
-    }
-
-    private static Soldier findFirstAlive(List<Soldier> army) {
-        for (Soldier soldier : army) {
-            if (soldier.isAlive()) {
-                return soldier;
+            
+            // Right turn
+            if (rightArmy.isAlive()) {
+                System.out.println("");
+                System.out.println("=======New Turn=======");
+                System.out.println("");
+                fight(rightArmy, leftArmy);
             }
         }
-        return null;
-    }
 
-    private static boolean hasAlive(List<Soldier> army) {
-        return findFirstAlive(army) != null;
     }
-     */
+    
+    private static void fight(Army attacker, Army defender) {
+        int damage = attacker.hit();
+        boolean isAlive = defender.wardOff(damage);
+
+        System.out.println("==> " +
+            attacker.getName() + " attacked " + defender.getName() +
+            " with " + damage +
+            " -> defenderAlive=" + isAlive
+        );
+    }
+    
 }

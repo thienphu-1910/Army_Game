@@ -4,6 +4,7 @@ import java.util.Set;
 
 import models.EquipmentType;
 import models.SoldierKind;
+import visitor.Visitor;
 
 public interface Soldier {
     int hit();
@@ -15,6 +16,12 @@ public interface Soldier {
     Set<EquipmentType> getEquipments();
 
     void addEquipment(EquipmentType equipmentType);
+    
+    int count();
+
+    void display();
+
+    void accept(Visitor v);
 
     default void addShield() {
         addEquipment(EquipmentType.SHIELD);

@@ -10,6 +10,7 @@ import decorators.Shield;
 import decorators.Sword;
 import models.EquipmentType;
 import models.SoldierKind;
+import visitor.Visitor;
 
 public class SoldierProxy implements Soldier {
     private static final Map<EquipmentType, UnaryOperator<Soldier>> EQUIPMENT_REGISTRY =
@@ -71,6 +72,22 @@ public class SoldierProxy implements Soldier {
     @Override
     public Set<EquipmentType> getEquipments() {
         return soldier.getEquipments();
+    }
+
+    @Override
+    public int count() {
+        return soldier.count();
+    }
+
+    @Override
+    public void display() {
+        System.out.println();
+    }
+
+    @Override
+    public void accept(Visitor v) {
+        soldier.accept(v);
+        v.visitSoldierProxy(this);
     }
 
     public static void registerEquipmentDecorator(

@@ -2,5 +2,6 @@ package models;
 
 public enum SoldierKind {
     INFANTRYMAN,
-    HORSEMAN
+    HORSEMAN,
+    ARMY_GROUP
 }

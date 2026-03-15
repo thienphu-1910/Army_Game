@@ -26,4 +26,5 @@ public class Sword extends EquipmentDecorator {
     protected EquipmentType getEquipmentType() {
         return EquipmentType.SWORD;
     }
+
 }

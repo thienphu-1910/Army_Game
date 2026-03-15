@@ -1,11 +1,14 @@
 package units;
 
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import core.Soldier;
 import models.EquipmentType;
 import models.SoldierKind;
+import visitor.Visitor;
 
 public class Infantryman implements Soldier {
     private static int sequence = 1;
@@ -66,5 +69,20 @@ public class Infantryman implements Soldier {
     @Override
     public void addEquipment(EquipmentType equipmentType) {
         // proxy
+    }
+
+    @Override
+    public int count() {
+        return 1;
+    }
+
+    @Override
+    public void display() {
+        System.out.print(this.name + " - " + SoldierKind.HORSEMAN.toString() + " - ");
+    }
+
+    @Override
+    public void accept(Visitor v) {
+        v.visitInfantryman(this);
     }
 }
