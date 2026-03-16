@@ -20,7 +20,6 @@ ArmyGameProject/
     ├── App.java            # Main entry point of the application
     ├── core/               # Core interfaces and base classes
     │   ├── Soldier.java    
-    │   └── ArmyComponent.java
     ├── units/              # Specific soldier types
     │   ├── Infantryman.java
     │   └── Horseman.java
@@ -30,8 +29,7 @@ ArmyGameProject/
     │   └── Sword.java
     ├── proxy/              # Pattern: Proxy (Duplicate equipment control)
     │   └── SoldierProxy.java
-    ├── composite/          # Pattern: Composite (Squads, Army organization)
-    │   ├── ArmyGroup.java
+    ├── composite/          # Pattern: Composite (Army organization)    
     │   └── Army.java
     ├── visitor/            # Pattern: Visitor (Traversing the army structure)
     │   ├── Visitor.java
