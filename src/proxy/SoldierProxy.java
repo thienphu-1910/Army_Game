@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 
 import core.Soldier;
+import decorators.GenericEquipment;
 import decorators.Shield;
 import decorators.Sword;
 import models.EquipmentType;
@@ -19,6 +20,38 @@ public class SoldierProxy implements Soldier {
     static {
         registerEquipmentDecorator(EquipmentType.SHIELD, Shield::new);
         registerEquipmentDecorator(EquipmentType.SWORD, Sword::new);
+        registerEquipmentDecorator(
+            EquipmentType.PIKE,
+            soldier -> new GenericEquipment(soldier, EquipmentType.PIKE, 4, 0)
+        );
+        registerEquipmentDecorator(
+            EquipmentType.ARMOR,
+            soldier -> new GenericEquipment(soldier, EquipmentType.ARMOR, 0, 4)
+        );
+        registerEquipmentDecorator(
+            EquipmentType.RIFLE,
+            soldier -> new GenericEquipment(soldier, EquipmentType.RIFLE, 7, 0)
+        );
+        registerEquipmentDecorator(
+            EquipmentType.GRENADE,
+            soldier -> new GenericEquipment(soldier, EquipmentType.GRENADE, 9, 0)
+        );
+        registerEquipmentDecorator(
+            EquipmentType.HELMET,
+            soldier -> new GenericEquipment(soldier, EquipmentType.HELMET, 0, 2)
+        );
+        registerEquipmentDecorator(
+            EquipmentType.LASER_SWORD,
+            soldier -> new GenericEquipment(soldier, EquipmentType.LASER_SWORD, 10, 0)
+        );
+        registerEquipmentDecorator(
+            EquipmentType.BIO_WEAPON,
+            soldier -> new GenericEquipment(soldier, EquipmentType.BIO_WEAPON, 8, 0)
+        );
+        registerEquipmentDecorator(
+            EquipmentType.NANO_ARMOR,
+            soldier -> new GenericEquipment(soldier, EquipmentType.NANO_ARMOR, 0, 6)
+        );
     }
 
     private Soldier soldier;

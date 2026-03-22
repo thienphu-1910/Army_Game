@@ -1,13 +1,12 @@
 package units;
 
 import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
 import core.Soldier;
 import models.EquipmentType;
 import models.SoldierKind;
+import observer.EventManager;
 import visitor.Visitor;
 
 public class Infantryman implements Soldier {
@@ -16,6 +15,7 @@ public class Infantryman implements Soldier {
 
     private final String name;
     private int health = 32;
+    private boolean deathNotified = false;
 
     public Infantryman() {
         this.name = "Infantry-" + sequence++;
@@ -33,6 +33,7 @@ public class Infantryman implements Soldier {
 
     @Override
     public boolean wardOff(int strength) {
+        boolean wasAlive = isAlive();
         int damage = Math.max(0, strength - ARMOR);
         health -= damage;
 
@@ -42,6 +43,11 @@ public class Infantryman implements Soldier {
             " dmg=" + damage +
             " hp=" + Math.max(health, 0)
         );
+
+        if (wasAlive && !isAlive() && !deathNotified) {
+            deathNotified = true;
+            EventManager.getInstance().notifyObservers(name);
+        }
 
         return isAlive();
     }

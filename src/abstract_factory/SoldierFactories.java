@@ -2,11 +2,11 @@ package abstract_factory;
 
 import models.SoldierEra;
 
-public final class SoldierFactoryProvider {
-    private SoldierFactoryProvider() {
+public final class SoldierFactories {
+    private SoldierFactories() {
     }
 
-    public static SoldierFactory fromEra(SoldierEra era) {
+    public static SoldierFactory of(SoldierEra era) {
         return switch (era) {
             case MEDIEVAL -> new MedievalSoldierFactory();
             case WORLD_WAR -> new WorldWarSoldierFactory();

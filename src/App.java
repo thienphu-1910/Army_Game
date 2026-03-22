@@ -1,76 +1,69 @@
-import core.Soldier;
-import java.util.ArrayList;
-import java.util.List;
-
+import abstract_factory.SoldierFactories;
+import abstract_factory.SoldierFactory;
 import composite.Army;
 import models.EquipmentType;
-import proxy.SoldierProxy;
-import units.Horseman;
-import units.Infantryman;
 import visitor.CountVisitor;
 import visitor.DisplayVisitor;
-import visitor.Visitor;
+import models.SoldierEra;
+import observer.DeathCountObserver;
+import observer.DeathNotifyObserver;
+import observer.EventManager;
+
 
 public class App {
     public static void main(String[] args) {
-        Army blueArmy = generateArmy(new Army("Blue Army"), 2);
-        Army redArmy = generateArmy(new Army("Red Army"), 3);
+        DeathCountObserver deathCountObserver = new DeathCountObserver();
+        DeathNotifyObserver deathNotifyObserver = new DeathNotifyObserver();
+        EventManager.getInstance().attach(deathCountObserver);
+        EventManager.getInstance().attach(deathNotifyObserver);
+
+        Army blueArmy = createBlueArmy();
+        Army redArmy = createRedArmy();
 
         var countVisitor = new CountVisitor();
         blueArmy.accept(countVisitor);
 
-        System.out.println("Total: " + countVisitor.getTotalSoldiers());
-        System.out.println("Infantryman: " + countVisitor.getTotalInfantryman());
-        System.out.println("Horseman: " + countVisitor.getTotalHorseman());
+        System.out.println("Blue Army total: " + countVisitor.getTotalSoldiers());
+        System.out.println("Blue Army infantry: " + countVisitor.getTotalInfantryman());
+        System.out.println("Blue Army horseman: " + countVisitor.getTotalHorseman());
 
-        var DisplayVisitor = new DisplayVisitor();
-        redArmy.accept(DisplayVisitor);
+        countVisitor = new CountVisitor();
+        redArmy.accept(countVisitor);
+        System.out.println("Red Army total: " + countVisitor.getTotalSoldiers());
+        System.out.println("Red Army infantry: " + countVisitor.getTotalInfantryman());
+        System.out.println("Red Army horseman: " + countVisitor.getTotalHorseman());
+
+        var displayVisitor = new DisplayVisitor();
+        blueArmy.accept(displayVisitor);
+        redArmy.accept(displayVisitor);
 
         launch(blueArmy, redArmy);
+
+        System.out.println("Total deaths in battle: " + deathCountObserver.getDeathCount());
     }
-    
-    private static Army generateArmy(Army army, int groupQuantity) {
-        if (groupQuantity == 1) {
-            Soldier infantryman1 = new SoldierProxy(new Infantryman("Infantryman-A"));
-            infantryman1.addShield();
-            infantryman1.addSword();
 
-            Soldier infantryman2 = new SoldierProxy(new Infantryman("Infantryman-B"));
-            infantryman2.addShield();
-            infantryman2.addShield(); // test duplication
-            infantryman2.addSword();
+    private static Army createBlueArmy() {
+        SoldierFactory medievalFactory = SoldierFactories.of(SoldierEra.MEDIEVAL);
+        Army blueArmy = new Army("Blue Army");
 
-            Soldier infantryman3 = new SoldierProxy(new Infantryman("Infantryman-C"));
-            infantryman3.addSword();
+        blueArmy.add(medievalFactory.createInfantryman("Blue-Infantry-1", EquipmentType.SWORD, EquipmentType.ARMOR));
+        blueArmy.add(medievalFactory.createInfantryman("Blue-Infantry-2", EquipmentType.PIKE));
+        blueArmy.add(medievalFactory.createHorseman("Blue-Horseman-1", EquipmentType.SWORD, EquipmentType.ARMOR));
+        blueArmy.add(medievalFactory.createHorseman("Blue-Horseman-2", EquipmentType.PIKE));
 
-            Soldier infantryman4 = new SoldierProxy(new Infantryman("Infantryman-D"));
-            infantryman4.addSword();
+        return blueArmy;
+    }
 
-            Soldier horseman1 = new SoldierProxy(new Horseman("Horseman-A"));
-            horseman1.addShield();
-            horseman1.addSword();
+    private static Army createRedArmy() {
+        SoldierFactory worldWarFactory = SoldierFactories.of(SoldierEra.WORLD_WAR);
+        Army redArmy = new Army("Red Army");
 
-            Soldier horseman2 = new SoldierProxy(new Horseman("Horseman-B"));
-            horseman2.addShield();
-            horseman2.addSword();
+        redArmy.add(worldWarFactory.createInfantryman("Red-Infantry-1", EquipmentType.RIFLE, EquipmentType.HELMET));
+        redArmy.add(worldWarFactory.createInfantryman("Red-Infantry-2", EquipmentType.GRENADE));
+        redArmy.add(worldWarFactory.createHorseman("Red-Horseman-1", EquipmentType.RIFLE));
+        redArmy.add(worldWarFactory.createHorseman("Red-Horseman-2", EquipmentType.HELMET, EquipmentType.GRENADE));
 
-            army.add(infantryman1);
-            army.add(infantryman2);
-            army.add(infantryman3);
-            army.add(infantryman4);
-
-            army.add(horseman1);
-            army.add(horseman2);
-
-            return army;
-        }
-
-        for (int i = 0; i < groupQuantity; ++i) {
-            Army group = generateArmy(new Army(), groupQuantity - 1);
-            army.add(group);
-        }
-
-        return army;
+        return redArmy;
     }
     
     private static void launch(Army leftArmy, Army rightArmy) {
@@ -78,22 +71,28 @@ public class App {
         System.out.println("|                    LAUNCH BATTLE                      |");
         System.out.println(" =======================================================");
 
-        
+        int round = 1;
         while (leftArmy.isAlive() && rightArmy.isAlive()) {
             System.out.println("");
-            System.out.println("=======New Turn=======");
+            System.out.println("======= ROUND " + round + " =======");
             System.out.println("");
-            // Left attack first
+
             fight(leftArmy, rightArmy);
 
-            
-            // Right turn
             if (rightArmy.isAlive()) {
                 System.out.println("");
-                System.out.println("=======New Turn=======");
+                System.out.println("======= COUNTER ROUND " + round + " =======");
                 System.out.println("");
                 fight(rightArmy, leftArmy);
             }
+
+            round++;
+        }
+
+        if (leftArmy.isAlive()) {
+            System.out.println("Winner: " + leftArmy.getName());
+        } else {
+            System.out.println("Winner: " + rightArmy.getName());
         }
 
     }

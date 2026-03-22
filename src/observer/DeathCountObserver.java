@@ -1,10 +1,15 @@
 package observer;
 
-public class DeathCountObserver {
+public class DeathCountObserver implements IObserver {
     private int deathCount = 0;
 
-    public void update() {
+    @Override
+    public void update(String soldierName) {
         deathCount++;
-        System.out.println("Death count updated: " + deathCount);
+        System.out.println("Death count updated: " + deathCount + " (last: " + soldierName + ")");
+    }
+
+    public int getDeathCount() {
+        return deathCount;
     }
 }
