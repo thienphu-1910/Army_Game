@@ -10,7 +10,7 @@ public interface Soldier {
     int hit();
     boolean wardOff(int strength);
 
-    boolean isAlive();
+    //boolean isAlive();
     String getName();
     SoldierKind getKind();
     Set<EquipmentType> getEquipments();

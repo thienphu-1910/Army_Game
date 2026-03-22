@@ -26,10 +26,10 @@ public abstract class EquipmentDecorator implements Soldier {
         return soldier.wardOff(strength);
     }
 
-    @Override
-    public boolean isAlive() {
-        return soldier.isAlive();
-    }
+    // @Override
+    // public boolean isAlive() {
+    //     return soldier.isAlive();
+    // }
 
     @Override
     public String getName() {

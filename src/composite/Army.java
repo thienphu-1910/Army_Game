@@ -2,6 +2,7 @@ package composite;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import models.SoldierKind;
@@ -12,6 +13,7 @@ import visitor.Visitor;
 public class Army implements Soldier {
   private String name;
   private static int sequence = 1;
+ // private boolean isAlive = true;
 
   protected ArrayList<Soldier> children = new ArrayList<>();
 
@@ -44,16 +46,25 @@ public class Army implements Soldier {
 
   @Override
   public boolean wardOff(int strength) {
-    int childReceivedDamage = strength / this.count();
-    boolean isAlive = false;
+    int quantity = children.size();
+    if (quantity <= 0)
+      return false;
 
-    for (Soldier child : children) {
-      if (child.isAlive() && child.wardOff(childReceivedDamage)) {
-          isAlive = true;
+    int childReceivedDamage = strength / quantity;
+    boolean isSurvied = false;
+
+    Iterator<Soldier> iterator = children.iterator();
+    while (iterator.hasNext()) {
+      Soldier child = iterator.next();
+
+      if (child.wardOff(childReceivedDamage)) {
+        isSurvied = true;
+      } else {
+        iterator.remove();
       }
     }
 
-    return isAlive;
+    return isSurvied;
   }
 
   @Override
@@ -63,15 +74,15 @@ public class Army implements Soldier {
     }
   }
 
-  @Override
-  public boolean isAlive() {
-    for (Soldier child : children) {
-      if (child.isAlive())
-        return true;
-    }
+  // @Override
+  // public boolean isAlive() {
+  //   for (Soldier child : children) {
+  //     if (child.isAlive())
+  //       return true;
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
   @Override
   public SoldierKind getKind() {

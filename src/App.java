@@ -72,32 +72,50 @@ public class App {
         System.out.println(" =======================================================");
 
         int round = 1;
-        while (leftArmy.isAlive() && rightArmy.isAlive()) {
+        // while (leftArmy.isAlive() && rightArmy.isAlive()) {
+        //     System.out.println("");
+        //     System.out.println("======= ROUND " + round + " =======");
+        //     System.out.println("");
+
+        //     fight(leftArmy, rightArmy);
+
+        //     if (rightArmy.isAlive()) {
+        //         System.out.println("");
+        //         System.out.println("======= COUNTER ROUND " + round + " =======");
+        //         System.out.println("");
+        //         fight(rightArmy, leftArmy);
+        //     }
+
+        //     round++;
+        // }
+
+        // if (leftArmy.isAlive()) {
+        //     System.out.println("Winner: " + leftArmy.getName());
+        // } else {
+        //     System.out.println("Winner: " + rightArmy.getName());
+        // }
+
+        Army attacker = leftArmy;
+        Army defender = rightArmy;
+        while (true) {
             System.out.println("");
             System.out.println("======= ROUND " + round + " =======");
             System.out.println("");
+            if (!fight(attacker, defender))
+                break;
 
-            fight(leftArmy, rightArmy);
-
-            if (rightArmy.isAlive()) {
-                System.out.println("");
-                System.out.println("======= COUNTER ROUND " + round + " =======");
-                System.out.println("");
-                fight(rightArmy, leftArmy);
-            }
+            Army temp = attacker;
+            attacker = defender;
+            defender = temp;
 
             round++;
         }
 
-        if (leftArmy.isAlive()) {
-            System.out.println("Winner: " + leftArmy.getName());
-        } else {
-            System.out.println("Winner: " + rightArmy.getName());
-        }
+        System.out.println("Winner: " + attacker.getName());
 
     }
     
-    private static void fight(Army attacker, Army defender) {
+    private static boolean fight(Army attacker, Army defender) {
         int damage = attacker.hit();
         boolean isAlive = defender.wardOff(damage);
 
@@ -106,6 +124,8 @@ public class App {
             " with " + damage +
             " -> defenderAlive=" + isAlive
         );
+
+        return isAlive;
     }
 }
     

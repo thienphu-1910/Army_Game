@@ -16,6 +16,7 @@ public class Horseman implements Soldier {
     private final String name;
     private int health = 28;
     private boolean deathNotified = false;
+    private boolean isAlive = health > 0;
 
     public Horseman() {
         this.name = "Horseman-" + sequence++;
@@ -27,15 +28,20 @@ public class Horseman implements Soldier {
 
     @Override
     public int hit() {
+        if (!isAlive)
+            return 0;
         System.out.println("Horseman.hit() -> " + name);
         return 15;
     }
 
     @Override
     public boolean wardOff(int strength) {
-        boolean wasAlive = isAlive();
+        if (!isAlive)
+            return false;
+
         int damage = Math.max(0, strength - ARMOR);
         health -= damage;
+        isAlive = health > 0;
 
         System.out.println(
             "Horseman.wardOff() -> " + name +
@@ -44,18 +50,18 @@ public class Horseman implements Soldier {
             " hp=" + Math.max(health, 0)
         );
 
-        if (wasAlive && !isAlive() && !deathNotified) {
+        if (!isAlive && !deathNotified) {
             deathNotified = true;
             EventManager.getInstance().notifyObservers(name);
         }
 
-        return isAlive();
+        return isAlive;
     }
 
-    @Override
-    public boolean isAlive() {
-        return health > 0;
-    }
+    // @Override
+    // public boolean isAlive() {
+    //     return health > 0;
+    // }
 
     @Override
     public String getName() {
