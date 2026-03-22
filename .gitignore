@@ -1,0 +1,48 @@
+# Compiled class files and directories
+bin/
+*.class
+
+# Package Files
+*.jar
+*.war
+*.ear
+*.nar
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+# Gradle
+build/
+.gradle/
+
+# IntelliJ IDEA
+.idea/
+out/
+*.iml
+*.iws
+*.workspace.xml
+
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
