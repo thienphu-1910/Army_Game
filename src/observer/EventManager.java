@@ -15,7 +15,9 @@ public class EventManager implements ISubject {
 
     @Override
     public void attach(IObserver observer) {
-        observers.add(observer);
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
     }
 
     @Override

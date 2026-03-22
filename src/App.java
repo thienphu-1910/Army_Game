@@ -6,14 +6,14 @@ import visitor.CountVisitor;
 import visitor.DisplayVisitor;
 import models.SoldierEra;
 import observer.DeathCountObserver;
-import observer.DeathNotifyObserver;
+import observer.DeathNotifierObserver;
 import observer.EventManager;
 
 
 public class App {
     public static void main(String[] args) {
-        DeathCountObserver deathCountObserver = new DeathCountObserver();
-        DeathNotifyObserver deathNotifyObserver = new DeathNotifyObserver();
+        DeathCountObserver deathCountObserver = DeathCountObserver.getInstance();
+        DeathNotifierObserver deathNotifyObserver = DeathNotifierObserver.getInstance();
         EventManager.getInstance().attach(deathCountObserver);
         EventManager.getInstance().attach(deathNotifyObserver);
 
