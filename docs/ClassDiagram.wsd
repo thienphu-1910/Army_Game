@@ -1,0 +1,333 @@
+@startuml ArmyGame
+skinparam classAttributeIconSize 0
+interface Soldier {
+  +hit(): int
+  +wardOff(strength: int): boolean
+  +getName(): String 
+  +getKind(): SoldierKind 
+  +getEquipments(): Set<EquipmentType>
+  +addEquipment(equipmentType: EquipmentType): void 
+  +count(): int 
+  +display(): void 
+  +accept(v: Visitor): void
+  +addShield(): void 
+  +addSword(): void
+}
+interface Visitor {
+  +visitArmy(army: Army): void
+  +visitHorseman(h: Horseman): void 
+  +visitInfantryman(i: Infantryman): void
+  +visitEquipmentDecorator(ed: EquipmentDecorator): void
+  +visitSoldierProxy(proxy: SoldierProxy): void
+}
+interface IObserver {
+  +update(soldierName): void
+}
+interface ISubject {
+  +attach(observer: IObserver): void
+  +detach(observer: IObserver): void
+  +notifyObservers(soldierName: String): void
+}
+interface SoldierFactory {
+  +getEra(): SoldierEra
+  +createInfantryman(name: String, equipments: EquipmentType...): Soldier
+  +createHorseman(name: String, equipments: EquipmentType...): Soldier
+}
+
+class Horseman {
+  -{static} sequence: int = 1
+  -{static} ARMOR: final int = 1
+  -name: final String
+  -health: int = 28
+  -deathNotified: boolean = false
+  -isAlive: boolean = health > 0
+  --
+  +Horseman()
+  +Horseman(name: String)
+  --
+  +hit(): int
+  +wardOff(strength: int): boolean
+  +getName(): String 
+  +getKind(): SoldierKind 
+  +getEquipments(): Set<EquipmentType>
+  +addEquipment(equipmentType: EquipmentType): void 
+  +count(): int 
+  +display(): void 
+  +accept(v: Visitor): void
+}
+class Infantryman {
+  -{static} sequence: int = 1
+  -{static} ARMOR: final int = 1
+  -name: final String
+  -health: int = 28
+  -deathNotified: boolean = false
+  -isAlive: boolean = health > 0
+  --
+  +Horseman()
+  +Horseman(name: String)
+  --
+  +hit(): int
+  +wardOff(strength: int): boolean
+  +getName(): String 
+  +getKind(): SoldierKind 
+  +getEquipments(): Set<EquipmentType>
+  +addEquipment(equipmentType: EquipmentType): void 
+  +count(): int 
+  +display(): void 
+  +accept(v: Visitor): void
+}
+class EquipmentDecorator {
+  #soldier: Soldier 
+  --
+  #EquipmentDecorator(soldier: Soldier)
+  --
+  +hit(): int
+  +wardOff(strength: int): boolean
+  +getName(): String 
+  +getKind(): SoldierKind 
+  +getEquipments(): Set<EquipmentType>
+  +addEquipment(equipmentType: EquipmentType): void 
+  +count(): int 
+  +display(): void 
+  +accept(v: Visitor): void
+  --
+  #{abstract} getEquipmentType(): EquipmentType
+}
+class Shield {
+  -durability: int = 5
+  --
+  +Shield(soldier: Soldier)
+  --
+  +wardOff(strength: int): boolean
+  #getEquipmentType(): EquipmentType
+}
+class Sword {
+  -durability: int = 5
+  --
+  +Sword(soldier: Soldier)
+  --
+  +hit(): int
+  #getEquipmentType(): EquipmentType
+}
+class SoldierProxy {
+  -{static} EQUIPMENT_REGISTRY: final Map<EquipmentType, UnaryOperator<Soldier>> = new EnumMap<>(EquipmentType.class)
+  -soldier: Soldier 
+  --
+  +SoldierProxy(soldier: Soldier)
+  --
+  +addEquipment(equipmentType: EquipmentType): void
+  +hit(): int 
+  +wardOff(strength: int): boolean
+  +getName(): String 
+  +getKind(): SoldierKind 
+  +getEquipments(): Set<EquipmentType>
+  +count(): int 
+  +display(): void 
+  +accept(v: Visitor): void 
+  +{static} registerEquipmentDecorator(equipmentType: EquipmentType, decoratorFactory: UnaryOperator<Soldier>): void
+}
+class Army {
+  -name: String 
+  -{static} sequence: int = 1
+  #children: ArrayList<Soldier> = new ArrayList<>()
+  --
+  Army()
+  Army(name: String)
+  --
+  +add(component: Soldier): void
+  +getName(): String 
+  +hit(): int
+  +wardOff(strength: int): boolean
+  +addEquipment(equipmentType: EquipmentType): void
+  +getKind(): SoldierKind
+  +getEquipments(): Set<EquipmentType>
+  +count(): int
+  +display(): void
+  +accept(v: Visitor): void
+}
+class CountVisitor {
+  -horsemans: int = 0
+  -infantrymans: int = 0
+  --
+  +visitArmy(army: Army): void
+  +visitHorseman(h: Horseman): void 
+  +visitInfantryman(i: Infantryman): void
+  +visitEquipmentDecorator(ed: EquipmentDecorator): void
+  +visitSoldierProxy(proxy: SoldierProxy): void
+  --
+  +getTotalInfantryman(): int
+  +getTotalHorseman(): int 
+  +getTotalSoldiers(): int
+}
+class DisplayVisitor {
+  +visitArmy(army: Army): void
+  +visitHorseman(h: Horseman): void 
+  +visitInfantryman(i: Infantryman): void
+  +visitEquipmentDecorator(ed: EquipmentDecorator): void
+  +visitSoldierProxy(proxy: SoldierProxy): void
+}
+class EventManager {
+  -{static} INSTANCE: final EventManager = new EventManager();
+  -observers: List<IObserver> = new ArrayList<>()
+  --
+  +{static} getInstance(): EventManager
+  --
+  +attach(observer: IObserver): void
+  +detach(observer: IObserver): void
+  +notifyObservers(soldierName: String): void
+}
+class DeathCountObserver {
+  -{static} INSTANCE: final DeathNotifierObserver = new DeathNotifierObserver()
+  --
+  -DeathNotifierObserver()
+  --
+  +{static} getInstance(): DeathNotifierObserver
+  +update(soldierName: String): void
+}
+class DeathNotifierObserver {
+  -{static} INSTANCE: final DeathCountObserver = new DeathCountObserver()
+  -deathCount: int = 0
+  --
+  -DeathCountObserver()
+  --
+  +{static} getInstance(): DeathCountObserver
+  +update(soldierName: String): void
+  +getDeathCount(): int
+}
+abstract class BaseEraSoldierFactory {
+  --
+  #{abstract} getAllowedEquipments(): Set<EquipmentType>
+  --
+  +createInfantryman(name: String, equipments: EquipmentType...): Soldier
+  +createHorseman(name: String, equipments: EquipmentType...): Soldier
+  --
+  -equipForEra(soldier: Soldier, equipments: EquipmentType...): void
+  
+}
+class MedievalSoldierFactory {
+  -{static} ALLOWED_EQUIPMENTS: final Set<EquipmentType>
+  --
+  +getEra(): SoldierEra
+  #getAllowedEquipments(): Set<EquipmentType>
+}
+class WorldWarSoldierFactory {
+  -{static} ALLOWED_EQUIPMENTS: final Set<EquipmentType>
+  --
+  +getEra(): SoldierEra
+  #getAllowedEquipments(): Set<EquipmentType>
+}
+class ScienceFictionSoldierFactory {
+  -{static} ALLOWED_EQUIPMENTS: final Set<EquipmentType>
+  --
+  +getEra(): SoldierEra
+  #getAllowedEquipments(): Set<EquipmentType>
+}
+class SoldierFactories {
+  --
+  -SoldierFactories()
+  --
+  +{static} of(era: SoldierEra): SoldierFactory
+}
+class GenericEquipment {
+  -equipmentType: final EquipmentType
+  -attackBonus: final int
+  -defenseBonus: final int
+  --
+  +GenericEquipment(soldier: Soldier, equipmentType: EquipmentType, attackBonus: int, defenseBonus: int)
+  --
+  +hit(): int
+  +wardOff(strength: int): boolean
+  #getEquipmentType(): EquipmentType
+}
+
+enum SoldierKind {
+  INFANTRYMAN,
+  HORSEMAN,
+  ARMY_GROUP
+}
+enum EquipmentType {
+  SHIELD,
+  SWORD,
+  PIKE,
+  ARMOR,
+  RIFLE,
+  GRENADE,
+  HELMET,
+  LASER_SWORD,
+  BIO_WEAPON,
+  NANO_ARMOR
+}
+enum SoldierEra {
+  MEDIEVAL,
+  WORLD_WAR,
+  SCIENCE_FICTION
+}
+
+
+class App {
+  +{static} main(args: String[]): void
+  -{static} createBlueArmy(): Army
+  -{static} createRedArmy(): Army
+  -{static} launch(leftArmy: Army, rightArmy: Army): void
+  -{static} fight(attacker: Army, defender: Army): boolean
+}
+
+Soldier <|.. Horseman
+Soldier <|.. Infantryman
+Soldier <|.. EquipmentDecorator
+Soldier <|.. SoldierProxy
+Soldier <|.. Army
+
+EquipmentDecorator o--> Soldier
+EquipmentDecorator <|-- Shield
+EquipmentDecorator <|-- Sword
+EquipmentDecorator <|-- GenericEquipment
+
+SoldierProxy o--> Soldier
+
+Army o--> Soldier
+
+Visitor <|.. CountVisitor
+Visitor <|.. DisplayVisitor
+
+Visitor ..> Army
+Visitor ..> SoldierProxy
+Visitor ..> Horseman
+Visitor ..> Infantryman
+Visitor ..> EquipmentDecorator
+
+Soldier ..> Visitor
+
+IObserver <|.. DeathNotifierObserver
+IObserver <|.. DeathCountObserver
+
+ISubject <|.. EventManager
+ISubject o--> IObserver
+
+SoldierFactory <|.. BaseEraSoldierFactory
+
+BaseEraSoldierFactory <|-- WorldWarSoldierFactory
+BaseEraSoldierFactory <|-- ScienceFictionSoldierFactory
+BaseEraSoldierFactory <|-- MedievalSoldierFactory
+
+SoldierFactories ..> SoldierFactory
+SoldierFactories ..> SoldierEra
+SoldierFactories ..> WorldWarSoldierFactory
+SoldierFactories ..> ScienceFictionSoldierFactory
+SoldierFactories ..> MedievalSoldierFactory
+
+Soldier ..> SoldierKind
+Soldier ..> EquipmentType
+SoldierProxy ..> EquipmentType
+
+App ..> SoldierFactories
+App ..> SoldierFactory
+App ..> SoldierEra
+App ..> Army
+App ..> EquipmentType
+App ..> CountVisitor
+App ..> DisplayVisitor
+App ..> EventManager
+App ..> DeathCountObserver
+App ..> DeathNotifierObserver
+@enduml
